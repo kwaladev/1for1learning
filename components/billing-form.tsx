@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/card";
 import * as Icons from "@/components/ui/icons";
 import { toast } from "@/components/ui/use-toast";
-
 import { formatDate } from "@/lib/utils";
-import { UserSubscriptionPlan } from "@/types";
+import type { UserSubscriptionPlan } from "@/types";
 
 interface BillingFormProps extends React.HTMLAttributes<HTMLFormElement> {
   subscriptionPlan: UserSubscriptionPlan & {
@@ -73,7 +72,7 @@ export function BillingForm({
             disabled={isLoading}
           >
             {isLoading && (
-              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.Spinner className="mr-2 size-4 animate-spin" />
             )}
             {subscriptionPlan?.isPaid
               ? "Manage Subscription"

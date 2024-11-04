@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import dynamic from "next/dynamic";
 import { motion, stagger, useAnimate } from "framer-motion";
+import dynamic from "next/dynamic";
+import { useEffect } from "react";
 
 import { cn } from "./utils/cn";
 
@@ -25,7 +25,7 @@ const TextGenerateEffectImpl = ({
       {
         duration: 2,
         delay: stagger(0.1),
-      },
+      }
     );
   }, [scope.current, words]);
 
@@ -61,5 +61,5 @@ export const TextGenerateEffect = dynamic(
   () => Promise.resolve(TextGenerateEffectImpl),
   {
     ssr: false,
-  },
+  }
 );

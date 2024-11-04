@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
-import dynamic from "next/dynamic";
 import { motion, stagger, useAnimate, useInView } from "framer-motion";
+import dynamic from "next/dynamic";
+import React, { useEffect } from "react";
 
 import { cn } from "./utils/cn";
 
@@ -41,7 +41,7 @@ export const TypewriterEffectImpl = ({
           duration: 0.3,
           delay: stagger(0.1),
           ease: "easeInOut",
-        },
+        }
       );
     }
   }, [isInView]);
@@ -84,9 +84,9 @@ export const TypewriterEffectImpl = ({
         }}
         className={cn(
           "inline-block h-4 w-[4px] rounded-sm  bg-blue-500",
-          cursorClassName,
+          cursorClassName
         )}
-      ></motion.span>
+      />
     </p>
   );
 };
@@ -95,5 +95,5 @@ export const TextGenerateEffect = dynamic(
   () => Promise.resolve(TypewriterEffectImpl),
   {
     ssr: false,
-  },
+  }
 );

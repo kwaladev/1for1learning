@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/components/ui";
-
 import type { SidebarNavItem } from "@/types";
 
 export interface DocsSidebarNavProps {
@@ -50,7 +49,7 @@ export function DocsSidebarNavItems({
               "flex w-full items-center rounded-md p-2 hover:underline",
               {
                 "bg-muted": pathname === item.href,
-              },
+              }
             )}
             target={item.external ? "_blank" : ""}
             rel={item.external ? "noreferrer" : ""}
@@ -64,7 +63,7 @@ export function DocsSidebarNavItems({
           >
             {item.title}
           </span>
-        ),
+        )
       )}
     </div>
   ) : null;

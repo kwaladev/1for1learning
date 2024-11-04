@@ -1,20 +1,20 @@
 // @ts-ignore
 // @ts-nocheck
-import * as React from "react";
-import NextImage, { ImageProps } from "next/image";
+import type { ImageProps } from "next/image";
+import NextImage from "next/image";
 import { useMDXComponent } from "next-contentlayer2/hooks";
-
-import { cn } from "@/components/ui";
-import { Callout } from "@/components/ui/callout";
+import * as React from "react";
 
 import { MdxCard } from "@/components/content/mdx-card";
+import { cn } from "@/components/ui";
+import { Callout } from "@/components/ui/callout";
 
 const components = {
   h1: ({ className, ...props }) => (
     <h1
       className={cn(
         "mt-2 scroll-m-20 text-4xl font-bold tracking-tight",
-        className,
+        className
       )}
       {...props}
     />
@@ -23,7 +23,7 @@ const components = {
     <h2
       className={cn(
         "mt-10 scroll-m-20 border-b pb-1 text-3xl font-semibold tracking-tight first:mt-0",
-        className,
+        className
       )}
       {...props}
     />
@@ -32,7 +32,7 @@ const components = {
     <h3
       className={cn(
         "mt-8 scroll-m-20 text-2xl font-semibold tracking-tight",
-        className,
+        className
       )}
       {...props}
     />
@@ -41,7 +41,7 @@ const components = {
     <h4
       className={cn(
         "mt-8 scroll-m-20 text-xl font-semibold tracking-tight",
-        className,
+        className
       )}
       {...props}
     />
@@ -50,7 +50,7 @@ const components = {
     <h5
       className={cn(
         "mt-8 scroll-m-20 text-lg font-semibold tracking-tight",
-        className,
+        className
       )}
       {...props}
     />
@@ -59,7 +59,7 @@ const components = {
     <h6
       className={cn(
         "mt-8 scroll-m-20 text-base font-semibold tracking-tight",
-        className,
+        className
       )}
       {...props}
     />
@@ -89,7 +89,7 @@ const components = {
     <blockquote
       className={cn(
         "mt-6 border-l-2 pl-6 italic [&>*]:text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />
@@ -118,7 +118,7 @@ const components = {
     <th
       className={cn(
         "border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right",
-        className,
+        className
       )}
       {...props}
     />
@@ -127,7 +127,7 @@ const components = {
     <td
       className={cn(
         "border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right",
-        className,
+        className
       )}
       {...props}
     />
@@ -136,7 +136,7 @@ const components = {
     <pre
       className={cn(
         "mb-4 mt-6 overflow-x-auto rounded-lg border bg-black p-4",
-        className,
+        className
       )}
       {...props}
     />
@@ -145,7 +145,7 @@ const components = {
     <code
       className={cn(
         "relative rounded border px-[0.3rem] py-[0.2rem] font-mono text-sm",
-        className,
+        className
       )}
       {...props}
     />

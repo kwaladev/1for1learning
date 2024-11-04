@@ -1,17 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+
 "use client";
 
-import * as React from "react";
-//navigate to new page
+// navigate to new page
 import { useRouter } from "next/navigation";
+import * as React from "react";
 
 import { cn } from "@/components/ui";
-//button self design
-import { buttonVariants, type ButtonProps } from "@/components/ui/button";
+// button self design
+import { type ButtonProps, buttonVariants } from "@/components/ui/button";
 import * as Icons from "@/components/ui/icons";
 import { toast } from "@/components/ui/use-toast";
-
 import { trpc } from "@/trpc/client";
 
 interface K8sCreateButtonProps extends ButtonProps {
@@ -71,15 +71,15 @@ export function K8sCreateButton({
         {
           "cursor-not-allowed opacity-60": isLoading,
         },
-        className,
+        className
       )}
       disabled={isLoading}
       {...props}
     >
       {isLoading ? (
-        <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+        <Icons.Spinner className="mr-2 size-4 animate-spin" />
       ) : (
-        <Icons.Add className="mr-2 h-4 w-4" />
+        <Icons.Add className="mr-2 size-4" />
       )}
       {dict.k8s?.new_cluster}
     </button>

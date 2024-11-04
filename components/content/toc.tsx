@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import { cn } from "@/components/ui";
-
 import type { TableOfContents } from "@/lib/toc";
 import { useMounted } from "@/lib/use-mounted";
 
@@ -16,12 +15,12 @@ export function DashboardTableOfContents({ toc }: TocProps) {
     () =>
       toc.items
         ? toc.items
-          .flatMap((item) => [item.url, item?.items?.map((item) => item.url)])
-          .flat()
-          .filter(Boolean)
-          .map((id) => id?.split("#")[1])
+            .flatMap((item) => [item.url, item?.items?.map((item) => item.url)])
+            .flat()
+            .filter(Boolean)
+            .map((id) => id?.split("#")[1])
         : [],
-    [toc],
+    [toc]
   );
   const activeHeading = useActiveItem(itemIds);
   const mounted = useMounted();
@@ -50,7 +49,7 @@ function useActiveItem(itemIds: (string | undefined)[]) {
           }
         });
       },
-      { rootMargin: `0% 0% -80% 0%` },
+      { rootMargin: `0% 0% -80% 0%` }
     );
 
     itemIds?.forEach((id) => {
@@ -99,7 +98,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
                 "inline-block no-underline",
                 item.url === `#${activeItem}`
                   ? "font-medium text-primary"
-                  : "text-sm text-muted-foreground",
+                  : "text-sm text-muted-foreground"
               )}
             >
               {item.title}

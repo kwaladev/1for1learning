@@ -1,6 +1,6 @@
-import { useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { useState } from "react";
 
 import { cn } from "./utils/cn";
 
@@ -21,21 +21,21 @@ export const HoverEffect = ({
     <div
       className={cn(
         "grid grid-cols-1 py-10  md:grid-cols-2  lg:grid-cols-3",
-        className,
+        className
       )}
     >
       {items.map((item, idx) => (
         <Link
           href={item?.link}
           key={item?.link}
-          className="group relative  block h-full w-full p-2"
+          className="group relative  block size-full p-2"
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
           <AnimatePresence>
             {hoveredIndex === idx && (
               <motion.span
-                className="absolute inset-0 block h-full w-full rounded-3xl bg-neutral-200  dark:bg-slate-800/[0.8]"
+                className="absolute inset-0 block size-full rounded-3xl bg-neutral-200 dark:bg-slate-800/[0.8]"
                 layoutId="hoverBackground"
                 initial={{ opacity: 0 }}
                 animate={{
@@ -69,8 +69,8 @@ export const Card = ({
   return (
     <div
       className={cn(
-        "relative z-20 h-full w-full overflow-hidden rounded-2xl border border-transparent bg-black p-4 group-hover:border-slate-700 dark:border-white/[0.2]",
-        className,
+        "relative z-20 size-full overflow-hidden rounded-2xl border border-transparent bg-black p-4 group-hover:border-slate-700 dark:border-white/[0.2]",
+        className
       )}
     >
       <div className="relative z-50">
@@ -103,7 +103,7 @@ export const CardDescription = ({
     <p
       className={cn(
         "mt-8 text-sm leading-relaxed tracking-wide text-zinc-400",
-        className,
+        className
       )}
     >
       {children}

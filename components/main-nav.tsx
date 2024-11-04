@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
-
-import { cn } from "@/components/ui";
-import * as Icons from "@/components/ui/icons";
+import React from "react";
 
 import { MobileNav } from "@/components/mobile-nav";
+import { cn } from "@/components/ui";
+import * as Icons from "@/components/ui/icons";
 import type { MainNavItem } from "@/types";
 
 interface MainNavProps {
@@ -52,7 +51,7 @@ export function MainNav({ items, children, params: { lang } }: MainNavProps) {
                 item.href.startsWith(`/${segment}`)
                   ? "text-foreground"
                   : "text-foreground/60",
-                item.disabled && "cursor-not-allowed opacity-80",
+                item.disabled && "cursor-not-allowed opacity-80"
               )}
             >
               {item.title}

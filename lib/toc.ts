@@ -48,7 +48,8 @@ function getItems(node, current): Items {
     current.items = node.children.map((i) => getItems(i, {}));
 
     return current;
-  } else if (node.type === "listItem") {
+  }
+  if (node.type === "listItem") {
     const heading = getItems(node.children[0], {});
 
     if (node.children.length > 1) {
@@ -69,7 +70,7 @@ const getToc = () => (node, file) => {
 export type TableOfContents = Items;
 
 export async function getTableOfContents(
-  content: string,
+  content: string
 ): Promise<TableOfContents> {
   const result = await remark().use(getToc).process(content);
 
