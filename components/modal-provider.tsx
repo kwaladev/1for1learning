@@ -10,9 +10,5 @@ export const ModalProvider = ({ dict }: { dict: Record<string, string> }) => {
     return null;
   }
 
-  return (
-    <>
-      <SignInModal dict={dict} />
-    </>
-  );
+  return <SignInModal dict={dict} />;
 };

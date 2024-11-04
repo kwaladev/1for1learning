@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 
 import {
   AlertDialog,
@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import * as Icons from "@/components/ui/icons";
 import { toast } from "@/components/ui/use-toast";
-
 import { trpc } from "@/trpc/client";
 import type { Cluster } from "@/types/k8s";
 
@@ -53,8 +52,8 @@ export function ClusterOperations({ cluster }: ClusterOperationsProps) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors hover:bg-muted">
-          <Icons.Ellipsis className="h-4 w-4" />
+        <DropdownMenuTrigger className="flex size-8 items-center justify-center rounded-md border transition-colors hover:bg-muted">
+          <Icons.Ellipsis className="size-4" />
           <span className="sr-only">Open</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -103,9 +102,9 @@ export function ClusterOperations({ cluster }: ClusterOperationsProps) {
               className="bg-red-600 focus:ring-red-600"
             >
               {isDeleteLoading ? (
-                <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.Spinner className="mr-2 size-4 animate-spin" />
               ) : (
-                <Icons.Trash className="mr-2 h-4 w-4" />
+                <Icons.Trash className="mr-2 size-4" />
               )}
               <span>Delete</span>
             </AlertDialogAction>

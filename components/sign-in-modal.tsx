@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
 import Image from "next/image";
-
-import { Button } from "@/components/ui/button";
-import * as Icons from "@/components/ui/icons";
+import React, { useState } from "react";
 
 import { Modal } from "@/components/modal";
+import { Button } from "@/components/ui/button";
+import * as Icons from "@/components/ui/icons";
 import { siteConfig } from "@/config/site";
 import { useSigninModal } from "@/hooks/use-signin-modal";
 
@@ -37,13 +36,12 @@ export const SignInModal = ({ dict }: { dict: Record<string, string> }) => {
             disabled={signInClicked}
             onClick={() => {
               setSignInClicked(true);
-
             }}
           >
             {signInClicked ? (
-              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.Spinner className="mr-2 size-4 animate-spin" />
             ) : (
-              <Icons.GitHub className="mr-2 h-4 w-4" />
+              <Icons.GitHub className="mr-2 size-4" />
             )}{" "}
             {dict.signup_github}
           </Button>

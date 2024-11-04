@@ -1,9 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -38,7 +38,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
-
 import { trpc } from "@/trpc/client";
 import type { Cluster } from "@/types/k8s";
 
@@ -59,10 +58,10 @@ const FormSchema = z.object({
   location: z.enum(["China", "Hong Kong", "Singapore", "Tokyo", "US-West"]),
 });
 const isValidLocation = (
-  location: string,
+  location: string
 ): location is "China" | "Hong Kong" | "Singapore" | "Tokyo" | "US-West" => {
   return ["China", "Hong Kong", "Singapore", "Tokyo", "US-West"].includes(
-    location,
+    location
   );
 };
 
@@ -254,7 +253,7 @@ export function ClusterConfig({ cluster, params: { lang } }: ClusterProps) {
                               <path d="M1295 510 c-3 -5 -1 -10 4 -10 6 0 11 5 11 10 0 6 -2 10 -4 10 -3 0 -8 -4 -11 -10z" />
                             </g>
                           </svg>
-                          {/*<svg className="h-8 w-12 " role="img" ><path d="M4 21 20 21 10 24zM4 20 10 19 10 8zM11 19 20 20 11 0z"/></svg>*/}
+                          {/* <svg className="h-8 w-12 " role="img" ><path d="M4 21 20 21 10 24zM4 20 10 19 10 8zM11 19 20 20 11 0z"/></svg> */}
                           <CardTitle>Cert Manager</CardTitle>
                         </div>
                         <CardDescription>
@@ -344,7 +343,7 @@ export function ClusterConfig({ cluster, params: { lang } }: ClusterProps) {
           <div className="w-2/3 space-y-6 p-6 pt-0">
             <Button type="submit" disabled={_isSaving}>
               {_isSaving && (
-                <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.Spinner className="mr-2 size-4 animate-spin" />
               )}
               Submit
             </Button>

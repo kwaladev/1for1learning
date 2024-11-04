@@ -4,7 +4,6 @@ import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import * as Icons from "@/components/ui/icons";
-
 import { trpc } from "@/trpc/client";
 import type { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
 
@@ -24,7 +23,7 @@ export function BillingFormButton({
   const [isPending, startTransition] = useTransition();
 
   async function createSession(planId: string) {
-    const res = await trpc.stripe.createSession.mutate({ planId: planId });
+    const res = await trpc.stripe.createSession.mutate({ planId });
     if (res?.url) window.location.href = res?.url;
   }
 
@@ -33,7 +32,7 @@ export function BillingFormButton({
     : offer?.stripeIds?.monthly;
 
   const stripeSessionAction = () =>
-    startTransition(async () => await createSession(stripePlanId!));
+    startTransition(async () => createSession(stripePlanId!));
 
   return (
     <Button
@@ -44,7 +43,7 @@ export function BillingFormButton({
     >
       {isPending ? (
         <>
-          <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" /> Loading...
+          <Icons.Spinner className="mr-2 size-4 animate-spin" /> Loading...
         </>
       ) : (
         <>

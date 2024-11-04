@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { UserAvatar } from "@/components/user-avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -28,13 +28,13 @@ export function UserAccountNav({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Avatar className="cursor-pointer size-9">
-          <AvatarImage alt={user?.name || ''} />
+        <Avatar className="size-9 cursor-pointer">
+          <AvatarImage alt={user?.name || ""} />
           <AvatarFallback>
             {user?.email
-              .split(' ')
+              .split(" ")
               .map((n) => n[0])
-              .join('')}
+              .join("")}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

@@ -1,26 +1,26 @@
 // @ts-ignore
 // @ts-nocheck
+
 "use client";
 
-import {
+import Link from "next/link";
+import type {
   JSXElementConstructor,
   Key,
   PromiseLikeOfReactNode,
   ReactElement,
   ReactNode,
-  useState,
 } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import Balancer from "react-wrap-balancer";
 
+import { BillingFormButton } from "@/components/price/billing-form-button";
 import { Button, buttonVariants } from "@/components/ui/button";
 import * as Icons from "@/components/ui/icons";
 import { Switch } from "@/components/ui/switch";
-
-import { BillingFormButton } from "@/components/price/billing-form-button";
 import { priceDataMap } from "@/config/price/price-data";
 import { useSigninModal } from "@/hooks/use-signin-modal";
-import { UserSubscriptionPlan } from "@/types";
+import type { UserSubscriptionPlan } from "@/types";
 
 interface PricingCardsProps {
   userId?: string;
@@ -70,23 +70,23 @@ export function PricingCards({
         {pricingData.map(
           (offer: {
             title:
-            | boolean
-            | Key
-            | ReactElement<any, string | JSXElementConstructor<any>>
-            | Iterable<ReactNode>
-            | PromiseLikeOfReactNode
-            | null
-            | undefined;
-            prices: {
-              monthly:
-              | string
-              | number
               | boolean
+              | Key
               | ReactElement<any, string | JSXElementConstructor<any>>
               | Iterable<ReactNode>
               | PromiseLikeOfReactNode
               | null
               | undefined;
+            prices: {
+              monthly:
+                | string
+                | number
+                | boolean
+                | ReactElement<any, string | JSXElementConstructor<any>>
+                | Iterable<ReactNode>
+                | PromiseLikeOfReactNode
+                | null
+                | undefined;
               yearly: number;
             };
             benefits: any[];
@@ -110,7 +110,9 @@ export function PricingCards({
                           <span className="mr-2 text-muted-foreground line-through">
                             ${offer?.prices?.monthly}
                           </span>
-                          <span>${(offer?.prices?.yearly / 12).toFixed(2)}</span>
+                          <span>
+                            ${(offer?.prices?.yearly / 12).toFixed(2)}
+                          </span>
                         </>
                       ) : (
                         `$${offer?.prices?.monthly}`
@@ -134,7 +136,7 @@ export function PricingCards({
                 <ul className="space-y-2 text-left text-sm font-medium leading-normal">
                   {offer?.benefits.map((feature) => (
                     <li className="flex items-start" key={feature}>
-                      <Icons.Check className="mr-3 h-5 w-5 shrink-0" />
+                      <Icons.Check className="mr-3 size-5 shrink-0" />
                       <p>{feature}</p>
                     </li>
                   ))}
@@ -145,7 +147,7 @@ export function PricingCards({
                         className="flex items-start text-muted-foreground"
                         key={feature}
                       >
-                        <Icons.Close className="mr-3 h-5 w-5 shrink-0" />
+                        <Icons.Close className="mr-3 size-5 shrink-0" />
                         <p>{feature}</p>
                       </li>
                     ))}
@@ -175,7 +177,7 @@ export function PricingCards({
                 )}
               </div>
             </div>
-          ),
+          )
         )}
       </div>
 

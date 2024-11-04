@@ -444,7 +444,7 @@ const patterns = [
 const bgPattern = (
   pattern: (typeof patterns)[number],
   fgColor: string,
-  opacity: number,
+  opacity: number
 ) => {
   const svg = pattern.image
     .replace('fill="#000"', `fill="${fgColor}" fill-opacity="${opacity}"`)
@@ -453,7 +453,7 @@ const bgPattern = (
     .replace(/>/g, "%3E")
     .replace(/&/g, "%26")
     .replace(/#/g, "%23");
-  return 'url("data:image/svg+xml,' + svg + '")';
+  return `url("data:image/svg+xml,${svg}")`;
 };
 
 const colors = [
@@ -482,7 +482,7 @@ export const getRandomPatternStyle = (seed: string) => {
   if (seed.length !== 0) {
     for (let i = 0; i < seed.length; i++) {
       hash = seed.charCodeAt(i) + ((hash << 5) - hash);
-      hash = hash & hash;
+      hash &= hash;
     }
   }
   const [nPatterns, nColors] = [patterns.length, colors.length];

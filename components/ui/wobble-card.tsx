@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
 import { motion } from "framer-motion";
+import React, { useState } from "react";
 
 import { cn } from "./utils/cn";
 
@@ -40,7 +40,7 @@ export const WobbleCard = ({
       }}
       className={cn(
         "relative mx-auto w-full  overflow-hidden rounded-2xl bg-indigo-800",
-        containerClassName,
+        containerClassName
       )}
     >
       <div
@@ -70,11 +70,11 @@ export const WobbleCard = ({
 const Noise = () => {
   return (
     <div
-      className="absolute inset-0 h-full w-full scale-[1.2] transform opacity-10 [mask-image:radial-gradient(#fff,transparent,75%)]"
+      className="absolute inset-0 size-full scale-[1.2] opacity-10 [mask-image:radial-gradient(#fff,transparent,75%)]"
       style={{
         backgroundImage: "url(/images/noise.webp)",
         backgroundSize: "30%",
       }}
-    ></div>
+    />
   );
 };

@@ -25,7 +25,7 @@ export function DashboardShell(props: {
         </div>
         {props.headerAction}
       </div>
-      {/*{props.breadcrumb && <Breadcrumbs />}*/}
+      {/* {props.breadcrumb && <Breadcrumbs />} */}
       <div className={props.className}>{props.children}</div>
     </div>
   );

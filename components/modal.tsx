@@ -4,7 +4,6 @@ import { Drawer } from "vaul";
 
 import { cn } from "@/components/ui";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-
 import useMediaQuery from "@/hooks/use-media-query";
 
 interface ModalProps {
@@ -30,7 +29,7 @@ export function Modal({
           <Drawer.Content
             className={cn(
               "fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-2xl border bg-background",
-              className,
+              className
             )}
           >
             <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
@@ -45,7 +44,7 @@ export function Modal({
   }
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
-      <DialogTitle></DialogTitle>
+      <DialogTitle />
       <DialogContent className="overflow-hidden p-0 md:max-w-md md:rounded-2xl md:border">
         {children}
       </DialogContent>

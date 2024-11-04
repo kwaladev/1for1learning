@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import * as Icons from "@/components/ui/icons";
-
 import { i18n, localeMap } from "@/config/i18n-config";
 
 export function LocaleChange({ url }: { url: string }) {
@@ -19,15 +18,15 @@ export function LocaleChange({ url }: { url: string }) {
 
   function onClick(locale: string) {
     // console.log(url);
-    router.push(`/${locale}/` + url);
+    router.push(`/${locale}/${url}`);
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 px-0">
+        <Button variant="ghost" size="sm" className="size-8 px-0">
           <Icons.Languages />
-          <span className="sr-only"></span>
+          <span className="sr-only" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import type { User } from "next-auth";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
 
@@ -21,7 +21,6 @@ import * as Icons from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-
 import { userNameSchema } from "@/lib/validations/user";
 import { trpc } from "@/trpc/client";
 
@@ -105,9 +104,7 @@ export function UserNameForm({ user, className, ...props }: UserNameFormProps) {
             className={cn(buttonVariants(), className)}
             disabled={isSaving}
           >
-            {isSaving && (
-              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isSaving && <Icons.Spinner className="mr-2 size-4 animate-spin" />}
             <span>Save</span>
           </button>
         </CardFooter>

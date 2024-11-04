@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 
-
 import { ModalProvider } from "@/components/modal-provider";
 import { NavBar } from "@/components/navbar";
 import { SiteFooter } from "@/components/site-footer";
@@ -19,7 +18,6 @@ export default async function MarketingLayout({
 }) {
   const dict = await getDictionary(lang);
 
-
   return (
     <div className="flex min-h-screen flex-col">
       <Suspense fallback="...">
@@ -28,7 +26,7 @@ export default async function MarketingLayout({
             (await getMarketingConfig({ params: { lang: `${lang}` } })).mainNav
           }
           params={{ lang: `${lang}` }}
-          scroll={true}
+          scroll
           marketing={dict.marketing}
           dropdown={dict.dropdown}
         />

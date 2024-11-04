@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import * as React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -99,7 +99,7 @@ export function UserAuthForm({
           </div>
           <button className={cn(buttonVariants())} disabled={isLoading}>
             {isLoading && (
-              <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Icons.Spinner className="mr-2 size-4 animate-spin" />
             )}
             {dict.signin_email}
             {/* Sign In with Email */}
@@ -129,9 +129,9 @@ export function UserAuthForm({
         disabled={isLoading || isGitHubLoading}
       >
         {isGitHubLoading ? (
-          <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+          <Icons.Spinner className="mr-2 size-4 animate-spin" />
         ) : (
-          <Icons.GitHub className="mr-2 h-4 w-4" />
+          <Icons.GitHub className="mr-2 size-4" />
         )}{" "}
         Github
       </button>
