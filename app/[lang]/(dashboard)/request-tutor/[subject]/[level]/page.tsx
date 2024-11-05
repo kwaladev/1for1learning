@@ -26,7 +26,7 @@ export default async function TutorResultsPage({
         Showing tutors for {subject} at {level} level
       </p>
       <Suspense fallback={<TutorResultsSkeleton />}>
-        <TutorResults lang={lang} subject={subject} level={level} />
+        <TutorResults lang={lang as string} subject={subject} level={level} />
       </Suspense>
     </div>
   );
@@ -36,6 +36,7 @@ function TutorResultsSkeleton() {
   return (
     <div className="space-y-6">
       {[...Array(3)].map((_, index) => (
+        // eslint-disable-next-line react/no-array-index-key
         <div key={index} className="flex items-center space-x-4">
           <Skeleton className="size-20 rounded-full" />
           <div className="space-y-2">

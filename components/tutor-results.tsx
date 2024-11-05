@@ -22,9 +22,10 @@ interface Tutor {
 interface TutorResultsProps {
   subject: string;
   level: string;
+  lang: string;
 }
 
-export function TutorResults({ subject, level }: TutorResultsProps) {
+export function TutorResults({ subject, level, lang }: TutorResultsProps) {
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -34,7 +35,9 @@ export function TutorResults({ subject, level }: TutorResultsProps) {
       setLoading(true);
       // In a real application, you would make an API call here
       // For now, we'll use a timeout to simulate a network request
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
 
       // Mock data
       const mockTutors: Tutor[] = [

@@ -95,16 +95,20 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
               className="flex w-full items-center justify-center rounded-full border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
               disabled={pending}
             >
-              {pending ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                  Loading...
-                </>
-              ) : mode === "signin" ? (
-                "Sign in"
-              ) : (
-                "Sign up"
-              )}
+              {(() => {
+                if (pending) {
+                  return (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Loading...
+                    </>
+                  );
+                }
+                if (mode === "signin") {
+                  return "Sign in";
+                }
+                return "Sign up";
+              })()}
             </Button>
           </div>
         </form>
@@ -125,9 +129,8 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
 
           <div className="mt-6">
             <Link
-              href={`${mode === "signin" ? "/sign-up" : "/sign-in"}${
-                redirect ? `?redirect=${redirect}` : ""
-              }${priceId ? `&priceId=${priceId}` : ""}`}
+              href={`${mode === "signin" ? "/sign-up" : "/sign-in"}${redirect ? `?redirect=${redirect}` : ""
+                }${priceId ? `&priceId=${priceId}` : ""}`}
               className="flex w-full justify-center rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
             >
               {mode === "signin"

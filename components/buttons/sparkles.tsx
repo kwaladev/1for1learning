@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { animate } from "framer-motion";
 import { stagger, useAnimate } from "framer-motion";
 import { Star } from "lucide-react";

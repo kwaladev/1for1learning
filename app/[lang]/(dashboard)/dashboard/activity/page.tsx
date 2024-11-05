@@ -116,7 +116,7 @@ export default async function ActivityPage() {
               </h3>
               <p className="max-w-sm text-sm text-gray-500">
                 When you perform actions like signing in or updating your
-                account, they'll appear here.
+                account, they&apos;ll appear here.
               </p>
             </div>
           )}

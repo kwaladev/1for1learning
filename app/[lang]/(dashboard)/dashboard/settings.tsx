@@ -41,11 +41,15 @@ export function Settings({ teamData }: { teamData: TeamDataWithMembers }) {
                   Current Plan: {teamData.planName || "Free"}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {teamData.subscriptionStatus === "active"
-                    ? "Billed monthly"
-                    : teamData.subscriptionStatus === "trialing"
-                      ? "Trial period"
-                      : "No active subscription"}
+                  {(() => {
+                    if (teamData.subscriptionStatus === "active") {
+                      return "Billed monthly";
+                    }
+                    if (teamData.subscriptionStatus === "trialing") {
+                      return "Trial period";
+                    }
+                    return "No active subscription";
+                  })()}
                 </p>
               </div>
               <form action={customerPortalAction}>

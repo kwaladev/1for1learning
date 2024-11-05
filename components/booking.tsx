@@ -84,7 +84,9 @@ const Booking = () => {
         throw new Error("Please fill out all fields");
       }
       // make some fake async call with promise for 5
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 3000);
+      });
 
       setIsConfirmed(true);
       setTimeout(() => {
@@ -190,6 +192,7 @@ const Booking = () => {
 
                           return (
                             <button
+                              // eslint-disable-next-line react/no-array-index-key
                               key={index}
                               className={cn(
                                 "flex size-10 cursor-pointer items-center justify-center rounded-xl text-primary-foreground transition-all duration-150 hover:bg-white/20",
