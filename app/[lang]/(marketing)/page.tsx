@@ -24,13 +24,19 @@ const meteors_data: Meteor = {
   url2: "https://www.google.com",
 };
 
-export default async function IndexPage({
-  params: { lang },
-}: {
-  params: {
-    lang: Locale;
-  };
-}) {
+export default async function IndexPage(
+  props: {
+    params: Promise<{
+      lang: Locale;
+    }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    lang
+  } = params;
+
   const dict = await getDictionary(lang);
 
   const blogContent = {

@@ -9,11 +9,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function TutorResultsPage({
-  params: { lang, subject, level },
-}: {
-  params: { lang: string; subject: string; level: string };
-}) {
+export default async function TutorResultsPage(
+  props: {
+    params: Promise<{ lang: string; subject: string; level: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    lang,
+    subject,
+    level
+  } = params;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-4">
@@ -34,18 +42,18 @@ export default async function TutorResultsPage({
 
 function TutorResultsSkeleton() {
   return (
-    <div className="space-y-6">
+    (<div className="space-y-6">
       {[...Array(3)].map((_, index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <div key={index} className="flex items-center space-x-4">
+        (<div key={index} className="flex items-center space-x-4">
           <Skeleton className="size-20 rounded-full" />
           <div className="space-y-2">
             <Skeleton className="h-4 w-[200px]" />
             <Skeleton className="h-4 w-[150px]" />
           </div>
-        </div>
+        </div>)
       ))}
-    </div>
+    </div>)
   );
 }
 

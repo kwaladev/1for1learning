@@ -6,11 +6,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function RequestTutorPage({
-  params: { lang },
-}: {
-  params: { lang: string };
-}) {
+export default async function RequestTutorPage(
+  props: {
+    params: Promise<{ lang: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    lang
+  } = params;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-6 text-3xl font-bold">Request a Tutor</h1>

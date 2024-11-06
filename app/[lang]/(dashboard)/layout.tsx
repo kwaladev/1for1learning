@@ -4,7 +4,7 @@ import { BaggageClaim, Home, LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
 
 import { signOut } from "@/app/[lang]/(login)/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -97,13 +97,22 @@ function Header({ lang }: { lang: string }) {
   );
 }
 
-export default function Layout({
-  children,
-  params: { lang },
-}: {
-  children: React.ReactNode;
-  params: { lang: string };
-}) {
+export default function Layout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ lang: string }>;
+  }
+) {
+  const params = use(props.params);
+
+  const {
+    lang
+  } = params;
+
+  const {
+    children
+  } = props;
+
   return (
     <section className="flex min-h-screen flex-col">
       <Header lang={lang} />
