@@ -26,7 +26,11 @@ import {
   users,
 } from "@/lib/db/schema";
 import { createCheckoutSession } from "@/lib/payments/stripe";
+import { EmailTemplate } from "@/components/email/email-template";
 
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 async function logActivity(
   teamId: number | null | undefined,
   userId: number,
@@ -90,7 +94,9 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     return createCheckoutSession({ team: foundTeam, priceId });
   }
 
-  redirect("/dashboard");
+  console.log("redirectTo", redirectTo);
+
+  redirect(redirectTo ? `/${redirectTo}` : "/dashboard");
 });
 
 const signUpSchema = z.object({
@@ -400,13 +406,16 @@ export const inviteTeamMember = validatedActionWithUser(
     }
 
     // Create a new invitation
-    await db.insert(invitations).values({
-      teamId: userWithTeam.teamId,
-      email,
-      role,
-      invitedBy: user.id,
-      status: "pending",
-    });
+    const [invitation] = await db
+      .insert(invitations)
+      .values({
+        teamId: userWithTeam.teamId,
+        email,
+        role,
+        invitedBy: user.id,
+        status: "pending",
+      })
+      .returning();
 
     await logActivity(
       userWithTeam.teamId,
@@ -415,8 +424,35 @@ export const inviteTeamMember = validatedActionWithUser(
     );
 
     // TODO: Send invitation email and include ?inviteId={id} to sign-up URL
-    // await sendInvitationEmail(email, userWithTeam.team.name, role)
+    const response = await sendInvitationEmail(email, invitation.id);
+
+    if (response.error) {
+      return { error: response.error };
+    }
+
+    console.log("response", response);
 
     return { success: "Invitation sent successfully" };
   }
 );
+
+export async function sendInvitationEmail(email: string, inviteId: number) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: [email],
+      subject: "You've been invited to join a team",
+      react: EmailTemplate({ email, inviteId }),
+    });
+
+    if (error) {
+      console.error("Error sending invitation email:", error);
+      return { error: "Failed to send invitation email" };
+    }
+
+    return { success: "Invitation email sent successfully", data };
+  } catch (error) {
+    console.error("Error sending invitation email:", error);
+    return { error: "Failed to send invitation email" };
+  }
+}

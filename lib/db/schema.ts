@@ -11,6 +11,8 @@ import {
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }),
+  firstName: varchar("first_name", { length: 100 }),
+  lastName: varchar("last_name", { length: 100 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   role: varchar("role", { length: 20 }).notNull().default("member"),
@@ -124,7 +126,7 @@ export type Invitation = typeof invitations.$inferSelect;
 export type NewInvitation = typeof invitations.$inferInsert;
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
-    user: Pick<User, "id" | "name" | "email">;
+    user: Pick<User, "id" | "firstName" | "lastName" | "email">;
   })[];
 };
 

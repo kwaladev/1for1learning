@@ -19,7 +19,9 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
   const inviteId = searchParams.get("inviteId");
   const [state, formAction, pending] = useActionState<ActionState, FormData>(
     mode === "signin" ? signIn : signUp,
-    { error: "" }
+    {
+      error: ""
+    },
   );
 
   return (
@@ -55,6 +57,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                 autoComplete="email"
                 required
                 maxLength={50}
+                defaultValue="kwaladev@gmail.com"
                 className="relative block w-full appearance-none rounded-full border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-500 focus:z-10 focus:border-orange-500 focus:outline-none focus:ring-orange-500 sm:text-sm"
                 placeholder="Enter your email"
               />
@@ -79,6 +82,7 @@ export function Login({ mode = "signin" }: { mode?: "signin" | "signup" }) {
                 required
                 minLength={8}
                 maxLength={100}
+                defaultValue="ui=Q_3EU*>uyCG,"
                 className="relative block w-full appearance-none rounded-full border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-500 focus:z-10 focus:border-orange-500 focus:outline-none focus:ring-orange-500 sm:text-sm"
                 placeholder="Enter your password"
               />
