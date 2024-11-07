@@ -1,13 +1,20 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { signToken, verifyToken } from '@/lib/auth/session';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { signToken, verifyToken } from "@/lib/auth/session";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-import { i18n } from '@/config/i18n-config';
+import { i18n } from "@/config/i18n-config";
 
-const protectedRoutes = ['dashboard', 'request-tutor'];
+const protectedRoutes = ["dashboard", "request-tutor"];
 const noRedirectRoute = ["/api(.*)"];
-const noNeedProcessRoute = [".*\\.png", ".*\\.jpg", ".*\\.jpeg", ".*\\.webp", ".*\\.svg", ".*\\.opengraph-image.png"];
+const noNeedProcessRoute = [
+  ".*\\.png",
+  ".*\\.jpg",
+  ".*\\.jpeg",
+  ".*\\.webp",
+  ".*\\.svg",
+  ".*\\.opengraph-image.png",
+];
 
 function getLocale(request: NextRequest): string | undefined {
   // Negotiator expects plain object so we need to transform headers
@@ -16,7 +23,7 @@ function getLocale(request: NextRequest): string | undefined {
   const locales = Array.from(i18n.locales);
   // Use negotiator and intl-localematcher to get best locale
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages(
-    locales,
+    locales
   );
   return matchLocale(languages, locales, i18n.defaultLocale);
 }
@@ -36,14 +43,15 @@ export async function middleware(request: NextRequest) {
     return null;
   }
   const { pathname } = request.nextUrl;
-  const segments = pathname.split('/');
-  const sessionCookie = request.cookies.get('session');
-  const isProtectedRoute = protectedRoutes.some((route) => segments.includes(route));
+  const segments = pathname.split("/");
+  const sessionCookie = request.cookies.get("session");
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    segments.includes(route)
+  );
 
   // Check if there is any supported locale in the pathname
   const pathnameIsMissingLocale = i18n.locales.every(
-    (locale) =>
-      !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`,
+    (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
   // Redirect if there is no locale
   if (!isNoRedirect(request) && pathnameIsMissingLocale) {
@@ -51,8 +59,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`,
-        request.url,
-      ),
+        request.url
+      )
     );
   }
 
@@ -61,7 +69,9 @@ export async function middleware(request: NextRequest) {
     if (request.nextUrl.search) {
       from += request.nextUrl.search;
     }
-    return NextResponse.redirect(new URL(`/${getLocale(request)}/sign-in?redirect=${from}`, request.url));
+    return NextResponse.redirect(
+      new URL(`/${getLocale(request)}/sign-in?redirect=${from}`, request.url)
+    );
   }
 
   let res = NextResponse.next();
@@ -72,21 +82,26 @@ export async function middleware(request: NextRequest) {
       const expiresInOneDay = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       res.cookies.set({
-        name: 'session',
+        name: "session",
         value: await signToken({
           ...parsed,
           expires: expiresInOneDay.toISOString(),
         }),
         httpOnly: true,
         secure: true,
-        sameSite: 'lax',
+        sameSite: "lax",
         expires: expiresInOneDay,
       });
     } catch (error) {
-      console.error('Error updating session:', error);
-      res.cookies.delete('session');
+      console.error("Error updating session:", error);
+      res.cookies.delete("session");
       if (isProtectedRoute) {
-        return NextResponse.redirect(new URL(`/${getLocale(request)}/sign-in`, request.url));
+        return NextResponse.redirect(
+          new URL(
+            `/${getLocale(request)}/sign-in?redirect=${request.nextUrl.pathname}`,
+            request.url
+          )
+        );
       }
     }
   }
@@ -95,5 +110,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

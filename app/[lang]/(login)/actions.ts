@@ -94,7 +94,9 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
     return createCheckoutSession({ team: foundTeam, priceId });
   }
 
-  redirect("/dashboard");
+  console.log("redirectTo", redirectTo);
+
+  redirect(redirectTo ? `/${redirectTo}` : "/dashboard");
 });
 
 const signUpSchema = z.object({
@@ -422,7 +424,13 @@ export const inviteTeamMember = validatedActionWithUser(
     );
 
     // TODO: Send invitation email and include ?inviteId={id} to sign-up URL
-    await sendInvitationEmail(email, invitation.id);
+    const response = await sendInvitationEmail(email, invitation.id);
+
+    if (response.error) {
+      return { error: response.error };
+    }
+
+    console.log("response", response);
 
     return { success: "Invitation sent successfully" };
   }
@@ -431,18 +439,20 @@ export const inviteTeamMember = validatedActionWithUser(
 export async function sendInvitationEmail(email: string, inviteId: number) {
   try {
     const { data, error } = await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
+      from: "onboarding@resend.dev",
       to: [email],
       subject: "You've been invited to join a team",
       react: EmailTemplate({ email, inviteId }),
     });
 
     if (error) {
-      return Response.json({ error }, { status: 500 });
+      console.error("Error sending invitation email:", error);
+      return { error: "Failed to send invitation email" };
     }
 
-    return Response.json(data);
+    return { success: "Invitation email sent successfully", data };
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    console.error("Error sending invitation email:", error);
+    return { error: "Failed to send invitation email" };
   }
 }

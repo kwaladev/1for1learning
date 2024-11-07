@@ -17,7 +17,7 @@ export default async function RequestTutorPage(
   const user = await getUser();
 
   if (!user) {
-    redirect("/sign-in");
+    redirect("/sign-in?redirect=request-tutor");
   }
 
   const teamData = await getTeamForUser(user.id);

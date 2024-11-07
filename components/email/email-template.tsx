@@ -13,6 +13,6 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     <div>
         <h1>Welcome, {email}!</h1>
         <p>You've been invited to join a team</p>
-        <Link href={`/en/sign-up?inviteId=${inviteId}`}>Accept invitation</Link>
+        <a href={`/en/sign-up?inviteId=${inviteId}`}>Accept invitation</a>
     </div>
 );
