@@ -7,72 +7,14 @@ import { useState } from "react";
 
 import OverviewCards from "./card-overview";
 import MultiStepForm from "./multistepform";
+import { TeamDataWithMembers } from "@/lib/db/schema";
 
 interface RequestTutorFormProps {
   lang: string;
+  teamData: TeamDataWithMembers;
 }
 
-const levels = [
-  {
-    name: "primary",
-    subjects: [
-      "Arabic",
-      "French",
-      "Mathematics",
-      "Science",
-      "Islamic Education",
-      "Civic Education",
-      "History",
-      "Geography",
-      "Art",
-      "Music",
-      "Physical Education",
-    ],
-  },
-  {
-    name: "middle",
-    subjects: [
-      "Arabic",
-      "French",
-      "English",
-      "Mathematics",
-      "Physics",
-      "Chemistry",
-      "Biology",
-      "History",
-      "Geography",
-      "Islamic Education",
-      "Civic Education",
-      "Technology",
-      "Art",
-      "Music",
-      "Physical Education",
-    ],
-  },
-  {
-    name: "high",
-    subjects: [
-      "Arabic",
-      "French",
-      "English",
-      "Mathematics",
-      "Physics",
-      "Chemistry",
-      "Biology",
-      "Philosophy",
-      "History",
-      "Geography",
-      "Islamic Education",
-      "Civic Education",
-      "Computer Science",
-      "Economics",
-      "Management",
-      "Technical Drawing",
-    ],
-  },
-];
-
-export function RequestTutorForm({ lang }: RequestTutorFormProps) {
+export function RequestTutorForm({ lang, teamData }: RequestTutorFormProps) {
   const [subject, setSubject] = useState("");
   const [level, setLevel] = useState("");
   const [description, setDescription] = useState("");
@@ -88,7 +30,7 @@ export function RequestTutorForm({ lang }: RequestTutorFormProps) {
   return (
     <div className="flex flex-col gap-4 md:flex-row">
       <div className="w-full">
-        <MultiStepForm />
+        <MultiStepForm teamData={teamData} />
       </div>
 
       <div className="mx-auto p-4">

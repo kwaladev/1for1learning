@@ -2,20 +2,38 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { Flag } from "lucide-react";
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { MultiSelect } from "./multiselector";
+import { useUser } from "@/lib/auth";
+import { getTeamForUser, getUser } from "@/lib/db/queries";
+import { TeamDataWithMembers } from "@/lib/db/schema";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { BookOpen, Atom, BookText, Scroll, Globe, Languages, Code, Palette } from "lucide-react";
 
 const FormDataSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  birthDate: z.date({
+    required_error: "Birth date is required",
+  }),
   grade: z.string().min(1, "Grade level is required"),
   curriculum: z.string().min(1, "Curriculum is required"),
   level: z.string().min(1, "Level is required"),
-  subject: z.string().min(1, "Subject is required"),
-  difficulty: z.string().min(1, "Difficulty level is required"),
+  subjects: z.array(z.string()).min(1, "At least one subject is required"),
   specificTopics: z.string().optional(),
   preferredSchedule: z.string().min(1, "Preferred schedule is required"),
   learningGoals: z.string().min(1, "Learning goals are required"),
@@ -28,37 +46,44 @@ const steps = [
   {
     id: "Step 1",
     name: "Student Info",
-    fields: ["firstName", "lastName", "email", "grade"],
+    fields: ["firstName", "lastName", "birthDate"],
   },
   {
     id: "Step 2",
     name: "Curriculum",
-    fields: ["curriculum", "level"],
+    fields: ["curriculum", "level", "grade"],
   },
   {
     id: "Step 3",
-    name: "Subject",
-    fields: ["subject", "difficulty", "specificTopics", "preferredSchedule"],
+    name: "Subjects",
+    fields: ["subjects", "specificTopics", "preferredSchedule"],
   },
   {
     id: "Step 4",
     name: "Goals",
     fields: ["learningGoals", "specialRequirements"],
   },
-  { id: "Step 5", name: "Complete" },
+  {
+    id: "Step 5",
+    name: "Submit",
+    fields: []
+  },
 ];
 
-export default function MultiStepForm() {
+export default function MultiStepForm({ teamData }: { teamData: TeamDataWithMembers }) {
+
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
-
+  const [birthDate, setBirthDate] = useState<Date>()
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const {
     register,
     handleSubmit,
     watch,
     reset,
     trigger,
+    setValue,
     formState: { errors },
   } = useForm<Inputs>({
     resolver: zodResolver(FormDataSchema),
@@ -66,7 +91,7 @@ export default function MultiStepForm() {
 
   const processForm: SubmitHandler<Inputs> = (data) => {
     console.log(data);
-    reset();
+    //reset();
   };
 
   type FieldName = keyof Inputs;
@@ -142,9 +167,40 @@ export default function MultiStepForm() {
               Student Information
             </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-white">
-              Please provide the student's details.
+              Please provide the student's information.
             </p>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+              <div className="sm:col-span-6">
+                <label
+                  htmlFor="teamMember"
+                  className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
+                >
+                  Select Team Member
+                </label>
+                <div className="mt-2">
+                  <Select
+                    onValueChange={(value) => {
+                      const member = teamData.teamMembers.find(m => m.id === Number(value));
+                      if (member) {
+                        setValue("firstName", member.user.firstName ?? "");
+                        setValue("lastName", member.user.lastName ?? "");
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a team member" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teamData.teamMembers.map((member) => (
+                        <SelectItem key={member.id} value={member.id.toString()}>
+                          {member.user.firstName} {member.user.lastName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div className="sm:col-span-3">
                 <label
                   htmlFor="firstName"
@@ -191,51 +247,45 @@ export default function MultiStepForm() {
                 </div>
               </div>
 
-              <div className="sm:col-span-4">
+              <div className="sm:col-span-2">
                 <label
-                  htmlFor="email"
+                  htmlFor="birthDate"
                   className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
                 >
-                  Email address
+                  Birth Date
                 </label>
                 <div className="mt-2">
-                  <input
-                    id="email"
-                    type="email"
-                    {...register("email")}
-                    autoComplete="email"
-                    className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
-                  />
-                  {errors.email?.message && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[280px] justify-start text-left font-normal",
+                          !birthDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {birthDate ? format(birthDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={birthDate}
+                        onSelect={
+                          (date) => {
+                            setBirthDate(date);
+                            setValue("birthDate", date);
+                          }
+                        }
+                        required
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {errors.birthDate?.message && (
                     <p className="mt-2 text-sm text-red-400">
-                      {errors.email.message}
+                      {errors.birthDate.message}
                     </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label
-                  htmlFor="grade"
-                  className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
-                >
-                  Grade Level
-                </label>
-                <div className="mt-2">
-                  <select
-                    id="grade"
-                    {...register("grade")}
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
-                  >
-                    <option value="">Select grade level</option>
-                    <option value="elementary">Elementary School</option>
-                    <option value="middle">Middle School</option>
-                    <option value="high">High School</option>
-                    <option value="college">College</option>
-                    <option value="adult">Adult Education</option>
-                  </select>
-                  {errors.grade?.message && (
-                    <p className="mt-2 text-sm text-red-400">{errors.grade.message}</p>
                   )}
                 </div>
               </div>
@@ -250,13 +300,13 @@ export default function MultiStepForm() {
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-              Curriculum & Level
+              Curriculum Details
             </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-white">
-              Select your curriculum and study level.
+              Select your curriculum, level, and grade.
             </p>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-3">
+              <div className="sm:col-span-2">
                 <label
                   htmlFor="curriculum"
                   className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -280,8 +330,7 @@ export default function MultiStepForm() {
                   )}
                 </div>
               </div>
-
-              <div className="sm:col-span-3">
+              <div className="sm:col-span-2">
                 <label
                   htmlFor="level"
                   className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -304,6 +353,31 @@ export default function MultiStepForm() {
                   )}
                 </div>
               </div>
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="grade"
+                  className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
+                >
+                  Grade Level
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="grade"
+                    {...register("grade")}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
+                  >
+                    <option value="">Select grade</option>
+                    <option value="elementary">Elementary School</option>
+                    <option value="middle">Middle School</option>
+                    <option value="high">High School</option>
+                    <option value="college">College</option>
+                    <option value="adult">Adult Education</option>
+                  </select>
+                  {errors.grade?.message && (
+                    <p className="mt-2 text-sm text-red-400">{errors.grade.message}</p>
+                  )}
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -318,50 +392,27 @@ export default function MultiStepForm() {
               Subject Details
             </h2>
             <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-white">
-              Tell us about the subject and your learning preferences.
+              Tell us about your subjects and schedule preferences.
             </p>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="sm:col-span-3">
+              <div className="sm:col-span-6">
                 <label
-                  htmlFor="subject"
+                  htmlFor="subjects"
                   className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
                 >
-                  Subject
+                  Subjects
                 </label>
                 <div className="mt-2">
-                  <input
-                    type="text"
-                    id="subject"
-                    {...register("subject")}
-                    autoComplete="subject"
-                    className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
+                  <SubjectSelector
+                    selectedSubjects={selectedSubjects}
+                    setSelectedSubjects={(subjects) => {
+                      setSelectedSubjects(subjects);
+                      setValue('subjects', subjects);
+                    }}
                   />
-                  {errors.subject?.message && (
+                  {errors.subjects?.message && (
                     <p className="mt-2 text-sm text-red-400">
-                      {errors.subject.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="sm:col-span-3">
-                <label
-                  htmlFor="difficulty"
-                  className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
-                >
-                  Difficulty Level
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    id="difficulty"
-                    {...register("difficulty")}
-                    autoComplete="difficulty"
-                    className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
-                  />
-                  {errors.difficulty?.message && (
-                    <p className="mt-2 text-sm text-red-400">
-                      {errors.difficulty.message}
+                      {errors.subjects.message}
                     </p>
                   )}
                 </div>
@@ -379,18 +430,13 @@ export default function MultiStepForm() {
                     type="text"
                     id="specificTopics"
                     {...register("specificTopics")}
-                    autoComplete="specific-topics"
+                    placeholder="E.g., Algebra, Chemistry, Grammar"
                     className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
                   />
-                  {errors.specificTopics?.message && (
-                    <p className="mt-2 text-sm text-red-400">
-                      {errors.specificTopics.message}
-                    </p>
-                  )}
                 </div>
               </div>
 
-              <div className="sm:col-span-3">
+              <div className="sm:col-span-6">
                 <label
                   htmlFor="preferredSchedule"
                   className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
@@ -398,13 +444,18 @@ export default function MultiStepForm() {
                   Preferred Schedule
                 </label>
                 <div className="mt-2">
-                  <input
-                    type="text"
+                  <select
                     id="preferredSchedule"
                     {...register("preferredSchedule")}
-                    autoComplete="preferred-schedule"
-                    className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
-                  />
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
+                  >
+                    <option value="">Select schedule preference</option>
+                    <option value="weekday_morning">Weekday Mornings</option>
+                    <option value="weekday_afternoon">Weekday Afternoons</option>
+                    <option value="weekday_evening">Weekday Evenings</option>
+                    <option value="weekend_morning">Weekend Mornings</option>
+                    <option value="weekend_afternoon">Weekend Afternoons</option>
+                  </select>
                   {errors.preferredSchedule?.message && (
                     <p className="mt-2 text-sm text-red-400">
                       {errors.preferredSchedule.message}
@@ -441,12 +492,32 @@ export default function MultiStepForm() {
                     id="learningGoals"
                     {...register("learningGoals")}
                     rows={4}
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
                     placeholder="What do you hope to achieve from these tutoring sessions?"
+                    className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
                   />
                   {errors.learningGoals?.message && (
-                    <p className="mt-2 text-sm text-red-400">{errors.learningGoals.message}</p>
+                    <p className="mt-2 text-sm text-red-400">
+                      {errors.learningGoals.message}
+                    </p>
                   )}
+                </div>
+              </div>
+
+              <div className="col-span-full">
+                <label
+                  htmlFor="specialRequirements"
+                  className="block text-sm font-medium leading-6 text-gray-900 dark:text-white"
+                >
+                  Special Requirements
+                </label>
+                <div className="mt-2">
+                  <textarea
+                    id="specialRequirements"
+                    {...register("specialRequirements")}
+                    rows={3}
+                    placeholder="Any special requirements or accommodations needed?"
+                    className="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 dark:text-white sm:text-sm sm:leading-6"
+                  />
                 </div>
               </div>
             </div>
@@ -454,14 +525,133 @@ export default function MultiStepForm() {
         )}
 
         {currentStep === 4 && (
-          <>
+          <motion.div
+            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
             <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-              Request Submitted
+              Review & Submit
             </h2>
-            <p className="mt-1 text-sm leading-6 text-green-500">
-              Thank you for your tutoring request. We'll match you with a suitable tutor shortly.
+            <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-white">
+              Please review all information before submitting.
             </p>
-          </>
+
+            <div className="mt-10 space-y-8">
+              {/* Personal Information */}
+              <div className="border-b border-gray-900/10 pb-8">
+                <h3 className="text-lg font-medium leading-7 text-gray-900 dark:text-white">
+                  Personal Information
+                </h3>
+                <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                      {watch("firstName")} {watch("lastName")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Birth Date</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                      {watch("birthDate") ? format(watch("birthDate"), "PPP") : "Not provided"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              {/* Curriculum Details */}
+              <div className="border-b border-gray-900/10 pb-8">
+                <h3 className="text-lg font-medium leading-7 text-gray-900 dark:text-white">
+                  Curriculum Details
+                </h3>
+                <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Curriculum</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white capitalize">
+                      {watch("curriculum")?.replace('_', ' ') || "Not selected"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Level</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white capitalize">
+                      {watch("level") || "Not selected"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Grade</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white capitalize">
+                      {watch("grade")?.replace('_', ' ') || "Not selected"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              {/* Subject Details */}
+              <div className="border-b border-gray-900/10 pb-8">
+                <h3 className="text-lg font-medium leading-7 text-gray-900 dark:text-white">
+                  Subject Details
+                </h3>
+                <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Selected Subjects</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                      <ul className="list-disc list-inside">
+                        {selectedSubjects.map((subject) => (
+                          <li key={subject} className="capitalize">
+                            {subjectsList.find(s => s.value === subject)?.label || subject}
+                          </li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Specific Topics</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                      {watch("specificTopics") || "None specified"}
+                    </dd>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Preferred Schedule</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white capitalize">
+                      {watch("preferredSchedule")?.replace(/_/g, ' ') || "Not selected"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              {/* Goals and Requirements */}
+              <div className="border-b border-gray-900/10 pb-8">
+                <h3 className="text-lg font-medium leading-7 text-gray-900 dark:text-white">
+                  Goals and Requirements
+                </h3>
+                <dl className="mt-4 grid grid-cols-1 gap-y-4">
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Learning Goals</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                      {watch("learningGoals") || "Not provided"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Special Requirements</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+                      {watch("specialRequirements") || "None specified"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+
+              {/* Submit Button */}
+              <div className="mt-8 flex justify-end">
+                <Button
+                  type="button"
+                  onClick={handleSubmit(processForm)}
+                  className="px-4 py-2 bg-sky-600 text-white rounded-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+                >
+                  Submit Application
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         )}
       </form>
 
@@ -513,5 +703,46 @@ export default function MultiStepForm() {
         </div>
       </div>
     </section>
+  );
+}
+
+const subjectsList = [
+  { value: 'mathematics', label: 'Mathematics', icon: BookOpen },
+  { value: 'science', label: 'Science', icon: Atom },
+  { value: 'english', label: 'English', icon: BookText },
+  { value: 'history', label: 'History', icon: Scroll },
+  { value: 'geography', label: 'Geography', icon: Globe },
+  { value: 'languages', label: 'Languages', icon: Languages },
+  { value: 'computer_science', label: 'Computer Science', icon: Code },
+  { value: 'arts', label: 'Arts', icon: Palette },
+];
+
+function SubjectSelector({
+  selectedSubjects,
+  setSelectedSubjects
+}: {
+  selectedSubjects: string[],
+  setSelectedSubjects: (subjects: string[]) => void
+}) {
+  return (
+    <div className='w-full'>
+      <MultiSelect
+        options={subjectsList}
+        onValueChange={setSelectedSubjects}
+        defaultValue={selectedSubjects}
+        placeholder='Select subjects'
+        maxCount={5}
+      />
+      <div className='mt-4'>
+        <h2 className='text-sm font-medium text-gray-900 dark:text-white'>Selected Subjects:</h2>
+        <ul className='list-disc list-inside mt-2'>
+          {selectedSubjects.map((subject) => (
+            <li key={subject} className="text-sm text-gray-600 dark:text-gray-300">
+              {subjectsList.find(s => s.value === subject)?.label || subject}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
